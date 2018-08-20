@@ -214,6 +214,7 @@ public class DefaultMessageStore implements MessageStore {
             throw new RuntimeException("Lock failed,MQ already started");
         }
 
+        
         lockFile.getChannel().write(ByteBuffer.wrap("lock".getBytes()));
         lockFile.getChannel().force(true);
 
