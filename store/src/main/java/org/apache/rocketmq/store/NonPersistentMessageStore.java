@@ -17,180 +17,66 @@
 
 package org.apache.rocketmq.store;
 
+import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Set;
+import org.apache.rocketmq.common.BrokerConfig;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.apache.rocketmq.common.message.MessageExtBatch;
+import org.apache.rocketmq.store.config.MessageStoreConfig;
+import org.apache.rocketmq.store.config.StorePathConfigHelper;
+import org.apache.rocketmq.store.stats.BrokerStatsManager;
 
-public class NonPersistentMessageStore implements MessageStore {
-    public boolean load() {
-        return false;
+import static org.apache.rocketmq.store.config.BrokerRole.SLAVE;
+
+public class NonPersistentMessageStore extends DefaultMessageStore {
+
+    public NonPersistentMessageStore(MessageStoreConfig messageStoreConfig,
+        BrokerStatsManager brokerStatsManager,
+        MessageArrivingListener messageArrivingListener,
+        BrokerConfig brokerConfig) throws IOException {
+        super(messageStoreConfig, brokerStatsManager, messageArrivingListener, brokerConfig);
     }
-
+    /**
+     * @throws Exception
+     */
     public void start() throws Exception {
-
+        super.start();
     }
 
     public void shutdown() {
-
+        super.shutdown();
     }
-
-    public void destroy() {
-
+    public PutMessageResult putMessage(MessageExtBrokerInner msg){
+        return super.putMessage(msg);
     }
-
-    public PutMessageResult putMessage(MessageExtBrokerInner msg) {
-        return null;
+    public GetMessageResult getMessage(final String group, final String topic, final int queueId, final long offset,
+        final int maxMsgNums,
+        final MessageFilter messageFilter){
+        return super.getMessage(group,topic,queueId,offset,maxMsgNums,messageFilter);
     }
-
-    public PutMessageResult putMessages(MessageExtBatch messageExtBatch) {
-        return null;
-    }
-
-    public GetMessageResult getMessage(String group, String topic, int queueId, long offset,
-        int maxMsgNums, MessageFilter messageFilter) {
-        return null;
-    }
-
     public long getMaxOffsetInQueue(String topic, int queueId) {
-        return 0;
+        return super.getMaxOffsetInQueue(topic,queueId);
     }
 
     public long getMinOffsetInQueue(String topic, int queueId) {
-        return 0;
+        return super.getMinOffsetInQueue(topic,queueId);
     }
 
+    @Override
     public long getCommitLogOffsetInQueue(String topic, int queueId, long consumeQueueOffset) {
-        return 0;
+        return super.getCommitLogOffsetInQueue(topic,queueId,consumeQueueOffset);
     }
 
-    public long getOffsetInQueueByTime(String topic, int queueId, long timestamp) {
-        return 0;
-    }
 
     public MessageExt lookMessageByOffset(long commitLogOffset) {
-        return null;
+        return  super.lookMessageByOffset(commitLogOffset);
     }
 
-    public SelectMappedBufferResult selectOneMessageByOffset(long commitLogOffset) {
-        return null;
+    public SelectMappedBufferResult getCommitLogData(final long offset) {
+        return super.getCommitLogData(offset);
     }
 
-    public SelectMappedBufferResult selectOneMessageByOffset(long commitLogOffset, int msgSize) {
-        return null;
-    }
-
-    public String getRunningDataInfo() {
-        return null;
-    }
-
-    public HashMap<String, String> getRuntimeInfo() {
-        return null;
-    }
-
-    public long getMaxPhyOffset() {
-        return 0;
-    }
-
-    public long getMinPhyOffset() {
-        return 0;
-    }
-
-    public long getEarliestMessageTime(String topic, int queueId) {
-        return 0;
-    }
-
-    public long getEarliestMessageTime() {
-        return 0;
-    }
-
-    public long getMessageStoreTimeStamp(String topic, int queueId, long consumeQueueOffset) {
-        return 0;
-    }
-
-    public long getMessageTotalInQueue(String topic, int queueId) {
-        return 0;
-    }
-
-    public SelectMappedBufferResult getCommitLogData(long offset) {
-        return null;
-    }
-
-    public boolean appendToCommitLog(long startOffset, byte[] data) {
-        return false;
-    }
-
-    public void executeDeleteFilesManually() {
-
-    }
-
-    public QueryMessageResult queryMessage(String topic, String key, int maxNum, long begin,
-        long end) {
-        return null;
-    }
-
-    public void updateHaMasterAddress(String newAddr) {
-
-    }
-
-    public long slaveFallBehindMuch() {
-        return 0;
-    }
-
-    public long now() {
-        return 0;
-    }
-
-    public int cleanUnusedTopic(Set<String> topics) {
-        return 0;
-    }
-
-    public void cleanExpiredConsumerQueue() {
-
-    }
-
-    public boolean checkInDiskByConsumeOffset(String topic, int queueId, long consumeOffset) {
-        return false;
-    }
-
-    public long dispatchBehindBytes() {
-        return 0;
-    }
-
-    public long flush() {
-        return 0;
-    }
-
-    public boolean resetWriteOffset(long phyOffset) {
-        return false;
-    }
-
-    public long getConfirmOffset() {
-        return 0;
-    }
-
-    public void setConfirmOffset(long phyOffset) {
-
-    }
-
-    public boolean isOSPageCacheBusy() {
-        return false;
-    }
-
-    public long lockTimeMills() {
-        return 0;
-    }
-
-    public boolean isTransientStorePoolDeficient() {
-        return false;
-    }
-
-    public LinkedList<CommitLogDispatcher> getDispatcherList() {
-        return null;
-    }
-
-    public ConsumeQueue getConsumeQueue(String topic, int queueId) {
-        return null;
-    }
 }
