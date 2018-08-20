@@ -61,9 +61,9 @@ import org.apache.rocketmq.store.stats.BrokerStatsManager;
 import static org.apache.rocketmq.store.config.BrokerRole.SLAVE;
 
 public class DefaultMessageStore implements MessageStore {
-    private static final InternalLogger log = InternalLoggerFactory.getLogger(LoggerName.STORE_LOGGER_NAME);
+    static final InternalLogger log = InternalLoggerFactory.getLogger(LoggerName.STORE_LOGGER_NAME);
 
-    private final MessageStoreConfig messageStoreConfig;
+    final MessageStoreConfig messageStoreConfig;
     // CommitLog
     private final CommitLog commitLog;
 
@@ -85,11 +85,11 @@ public class DefaultMessageStore implements MessageStore {
 
     private final ScheduleMessageService scheduleMessageService;
 
-    private final StoreStatsService storeStatsService;
+    final StoreStatsService storeStatsService;
 
     private final TransientStorePool transientStorePool;
 
-    private final RunningFlags runningFlags = new RunningFlags();
+    final RunningFlags runningFlags = new RunningFlags();
     private final SystemClock systemClock = new SystemClock();
 
     private final ScheduledExecutorService scheduledExecutorService =
@@ -98,11 +98,11 @@ public class DefaultMessageStore implements MessageStore {
     private final MessageArrivingListener messageArrivingListener;
     private final BrokerConfig brokerConfig;
 
-    private volatile boolean shutdown = true;
+    volatile boolean shutdown = true;
 
     private StoreCheckpoint storeCheckpoint;
 
-    private AtomicLong printTimes = new AtomicLong(0);
+    AtomicLong printTimes = new AtomicLong(0);
 
     private final LinkedList<CommitLogDispatcher> dispatcherList;
 
