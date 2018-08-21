@@ -9,6 +9,7 @@ import org.apache.rocketmq.common.BrokerConfig;
 import org.apache.rocketmq.store.config.FlushDiskType;
 import org.apache.rocketmq.store.config.MessageStoreConfig;
 import org.apache.rocketmq.store.stats.BrokerStatsManager;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -63,6 +64,8 @@ public class NonPersistentMessageStoreTest {
 
         // print get message body
         System.out.println(result.getResult().get(0).getBody());
+
+        Assert.assertEquals(msg.getBody(), result.getResult().get(0).getBody());
 
         result.release();
     }
