@@ -60,7 +60,7 @@ public class ConsumerOrderly {
         ArrayList<MessageExt> ret = new ArrayList<MessageExt>();
         PriorityQueue<LabeledMsg> pq = new PriorityQueue<LabeledMsg>(sz, new LabeledMsgComparator());
 
-        System.out.printf("Start sorting. %n");
+//        System.out.printf("Start sorting. %n");
 
         for (int i = 0;i < sz;i++) {
             idx[i] = 1;
@@ -69,7 +69,7 @@ public class ConsumerOrderly {
             pq.add(tmp);
         }
 
-        System.out.printf("Poll first finished. %n");
+//        System.out.printf("Poll first finished. %n");
 
         while (true) {
             LabeledMsg tmp = pq.poll();
@@ -82,7 +82,7 @@ public class ConsumerOrderly {
             pq.add(addToPq);
         }
 
-        System.out.printf("Finish while. %n");
+//        System.out.printf("Finish while. %n");
 
         for (int i = 0;i < sz;i++) {
             int curLen = listLen[i];
@@ -92,13 +92,13 @@ public class ConsumerOrderly {
             }
         }
 
-        System.out.printf("Poll last Finish %n");
+//        System.out.printf("Poll last Finish %n");
 
         while (!pq.isEmpty()) {
             messageNeedToCompare.add(pq.poll().msg);
         }
 
-        System.out.printf("Finish poll rest. %n");
+//        System.out.printf("Finish poll rest. %n");
         return ret;
     }
 
@@ -133,22 +133,24 @@ public class ConsumerOrderly {
             @Override
             public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs,
                                                             ConsumeConcurrentlyContext context) {
-                System.out.printf("Msg received. %n");
+//                System.out.printf("Msg received. %n");
                 ArrayList<ArrayList<MessageExt>> mps = new ArrayList<ArrayList<MessageExt>>();
                 for (MessageExt msg: msgs) {
                     if (msg.getQueueId() >= mps.size())
                         mps.add(new ArrayList<MessageExt>());
                     mps.get(msg.getQueueId()).add(msg);
                 }
-                System.out.printf("Preparation finished. %n");
+                if (messageNeedToCompare.size() > 0)
+                    mps.add(messageNeedToCompare);
+//                System.out.printf("Preparation finished. %n");
                 List<MessageExt> res = sort(mps);
-                System.out.printf("Sort finished. %n");
+//                System.out.printf("Sort finished. %n");
 
-                System.out.printf("=======%s Start print msg results: %s %n ========", Thread.currentThread().getName(), res);
+//                System.out.printf("=======%s Start print msg results: %s %n ========", Thread.currentThread().getName(), res);
                 for (MessageExt msg: res){
                     System.out.printf("Receive message with timestamp %d %n", msg.getStoreTimestamp());
                 }
-                System.out.printf("=======%s Receive New Messages: %s %n=======", Thread.currentThread().getName(), res);
+//                System.out.printf("=======%s Receive New Messages: %s %n=======", Thread.currentThread().getName(), res);
                 return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
             }
         });
