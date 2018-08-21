@@ -108,7 +108,14 @@ public class NonPersistentMessageStore extends DefaultMessageStore {
                 map.get(msg.getQueueId()).offer(msg);
             }
         }else {
-            store.get(msg.getTopic()).get(msg.getQueueId()).offer(msg);
+            if(store.get(msg.getTopic()).get(msg.getQueueId())==null){
+                LinkedList<MessageExtBrokerInner> list = new LinkedList<MessageExtBrokerInner>();
+                list.offer(msg);
+                store.get(msg.getTopic()).put(msg.getQueueId(),list);
+            }else{
+                store.get(msg.getTopic()).get(msg.getQueueId()).offer(msg);
+            }
+
         }
         long eclipseTime = this.getSystemClock().now() - beginTime;
         if (eclipseTime > 500) {
@@ -118,7 +125,7 @@ public class NonPersistentMessageStore extends DefaultMessageStore {
 
         return new PutMessageResult(PutMessageStatus.PUT_OK, null);
     }
-    public LinkedList<MessageExtBrokerInner> getMessageByUs(final String group, final String topic, final int queueId, final long offset,
+    public GetMessageResult getMessage(final String group, final String topic, final int queueId, final long offset,
         final int maxMsgNums,
         final MessageFilter messageFilter){
 
@@ -135,7 +142,7 @@ public class NonPersistentMessageStore extends DefaultMessageStore {
         long beginTime = this.getSystemClock().now();
 
         GetMessageStatus status = GetMessageStatus.NO_MESSAGE_IN_QUEUE;
-        long nextBeginOffset = offset;
+        long nextBeginOffset = 0;
         long minOffset = 0;
         long maxOffset = 0;
         GetMessageResult getResult = new GetMessageResult();
@@ -156,6 +163,7 @@ public class NonPersistentMessageStore extends DefaultMessageStore {
                 for(int i=0;i<maxMsgNums;i++){
                     result.offer(msg.poll());
                 }
+                maxOffset = msg.size() - maxMsgNums;
             }
 
 
@@ -170,7 +178,13 @@ public class NonPersistentMessageStore extends DefaultMessageStore {
         }
         long eclipseTime = this.getSystemClock().now() - beginTime;
         this.storeStatsService.setGetMessageEntireTimeMax(eclipseTime);
-        return result;
+        getResult.addAllMessage(result);
+        getResult.setStatus(status);
+        getResult.setNextBeginOffset(nextBeginOffset);
+        getResult.setMaxOffset(maxOffset);
+        getResult.setMinOffset(minOffset);
+
+        return getResult;
 
 
     }

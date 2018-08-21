@@ -18,6 +18,7 @@ package org.apache.rocketmq.store;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import org.apache.rocketmq.store.stats.BrokerStatsManager;
 
@@ -27,6 +28,8 @@ public class GetMessageResult {
         new ArrayList<SelectMappedBufferResult>(100);
 
     private final List<ByteBuffer> messageBufferList = new ArrayList<ByteBuffer>(100);
+
+    private  List<MessageExtBrokerInner>  result = null;
 
     private GetMessageStatus status;
     private long nextBeginOffset;
@@ -88,6 +91,9 @@ public class GetMessageResult {
         this.bufferTotalSize += mapedBuffer.getSize();
         this.msgCount4Commercial += (int) Math.ceil(
             mapedBuffer.getSize() / BrokerStatsManager.SIZE_PER_COUNT);
+    }
+    public void addAllMessage(LinkedList<MessageExtBrokerInner> msg){
+        this.result = msg;
     }
 
     public void release() {
