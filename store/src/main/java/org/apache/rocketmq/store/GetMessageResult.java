@@ -96,6 +96,10 @@ public class GetMessageResult {
         this.result = msg;
     }
 
+    public List<MessageExtBrokerInner> getResult() {
+        return result;
+    }
+
     public void release() {
         for (SelectMappedBufferResult select : this.messageMapedList) {
             select.release();

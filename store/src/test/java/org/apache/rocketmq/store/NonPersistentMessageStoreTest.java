@@ -25,7 +25,6 @@ public class NonPersistentMessageStoreTest {
     private byte[] MessageBody = StoreMessage.getBytes();
     private MessageStore messageStore;
 
-
     @Before
     public void init() throws Exception {
         StoreHost = new InetSocketAddress(InetAddress.getLocalHost(), 8123);
@@ -46,17 +45,26 @@ public class NonPersistentMessageStoreTest {
         return new NonPersistentMessageStore(messageStoreConfig, new BrokerStatsManager("simpleTest"), new MyMessageArrivingListener(), new BrokerConfig());
     }
 
+    /** Unit test for put message and get message */
     @Test
     public void testWriteAndRead() {
         QUEUE_TOTAL = 1;
-        // put message
-        messageStore.putMessage(buildMessage());
+        MessageExtBrokerInner msg = buildMessage();
+
+        // print message body
+        System.out.println(msg.getBody());
+
+        // put message body
+        messageStore.putMessage(msg);
 
         // get message
         GetMessageResult result = messageStore.getMessage("GROUP_A", "FooBar", 0, 0, 1024 * 1024, null);
         assertThat(result).isNotNull();
-        result.release();
 
+        // print get message body
+        System.out.println(result.getResult().get(0).getBody());
+
+        result.release();
     }
 
     private MessageExtBrokerInner buildMessage() {
